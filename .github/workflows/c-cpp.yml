@@ -73,6 +73,12 @@ jobs:
         cmake --install . --config Release --prefix=$env:GITHUB_WORKSPACE/install
       if: matrix.os == 'windows-latest'
 
+    - name: Upload (hackrflib)
+      uses: actions/upload-artifact@v4.3.0
+      with:
+        name: hackrflib
+        path: D:\a\hackrf\hackrf/install
+
     - name: Create Build Environment (hackrf-tools)
       run: cmake -E make_directory ${{runner.workspace}}/host/hackrf-tools/build
 
