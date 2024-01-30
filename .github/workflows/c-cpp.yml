@@ -76,6 +76,11 @@ jobs:
     - name: Build (libhackrf)
       working-directory: ${{runner.workspace}}/host/libhackrf/build
       run: cmake --build . --config Release
+    - name: Upload
+      uses: actions/upload-artifact@v4.3.0
+      with:
+        name: hackrflib
+        path: ${{runner.workspace}}/host/libhackrf/build
 
     - name: Install (libhackrf)
       working-directory: ${{runner.workspace}}/host/libhackrf/build
@@ -110,6 +115,11 @@ jobs:
       # hackrf.h, despite us having installed it and specified its location in
       # the previous steps above.
       if: matrix.os != 'windows-latest'
+    - name: Upload
+      uses: actions/upload-artifact@v4.3.0
+      with:
+        name: hackrf-tools
+        path: ${{runner.workspace}}/host/hackrf-tools/build
 
   firmware:
     strategy:
@@ -155,3 +165,8 @@ jobs:
       working-directory: ${{runner.workspace}}/firmware/build
       shell: bash
       run: cmake --build . --config Release
+    - name: Upload
+      uses: actions/upload-artifact@v4.3.0
+      with:
+        name: firmware
+        path: ${{runner.workspace}}/firmware/build
