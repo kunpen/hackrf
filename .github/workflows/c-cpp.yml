@@ -20,7 +20,7 @@ jobs:
   host:
     strategy:
       matrix:
-        os: ['macos-latest', 'ubuntu-latest', 'windows-latest']
+        os: ['ubuntu-latest', 'windows-latest']
 
       # Don't cancel all builds when one fails
       fail-fast: false
@@ -29,9 +29,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Install dependencies (macOS)
-      run: brew install fftw
-      if: matrix.os == 'macos-latest'
 
     - name: Install dependencies (Ubuntu)
       run: |
@@ -59,6 +56,12 @@ jobs:
     - name: Build
       working-directory: ${{runner.workspace}}/host/build
       run: cmake --build . --config Release
+      
+    - name: Upload
+      uses: actions/upload-artifact@v4.3.0
+      with:
+        name: hackrflib
+        path: ${{runner.workspace}}/host/build
 
     - name: Create Build Environment (libhackrf)
       run: cmake -E make_directory ${{runner.workspace}}/host/libhackrf/build
@@ -76,7 +79,8 @@ jobs:
     - name: Build (libhackrf)
       working-directory: ${{runner.workspace}}/host/libhackrf/build
       run: cmake --build . --config Release
-    - name: Upload
+      
+    - name: Upload (libhackrf)
       uses: actions/upload-artifact@v4.3.0
       with:
         name: hackrflib
@@ -115,7 +119,7 @@ jobs:
       # hackrf.h, despite us having installed it and specified its location in
       # the previous steps above.
       if: matrix.os != 'windows-latest'
-    - name: Upload
+    - name: Upload (hackrf-tools)
       uses: actions/upload-artifact@v4.3.0
       with:
         name: hackrf-tools
@@ -124,7 +128,7 @@ jobs:
   firmware:
     strategy:
       matrix:
-        os: ['macos-latest', 'ubuntu-latest']
+        os: ['ubuntu-latest']
         board: ['HACKRF_ONE', 'JAWBREAKER', 'RAD1O']
 
       # Don't cancel all builds when one fails
@@ -136,12 +140,6 @@ jobs:
       with:
         submodules: true
 
-    - name: Install dependencies (macOS)
-      run: |
-        brew install --cask gcc-arm-embedded
-        brew install dfu-util
-        pip3 install PyYAML
-      if: matrix.os == 'macos-latest'
 
     - name: Install dependencies (Ubuntu)
       run: |
